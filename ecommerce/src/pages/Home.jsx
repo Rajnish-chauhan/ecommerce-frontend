@@ -42,10 +42,14 @@ export default function Home() {
         fetchProducts();
     }, [login]);
 
-    // 🔥 Filter Logic: Search aur Category dono ko check karega
+// 🔥 SAFE FILTER LOGIC 🔥
     const filteredProducts = products.filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+        const safeName = product?.name || ""; 
+        const safeQuery = searchQuery || "";
+        const safeCategory = product?.category || "General";
+
+        const matchesSearch = safeName.toLowerCase().includes(safeQuery.toLowerCase());
+        const matchesCategory = selectedCategory === 'All' || safeCategory === selectedCategory;
         
         return matchesSearch && matchesCategory;
     });

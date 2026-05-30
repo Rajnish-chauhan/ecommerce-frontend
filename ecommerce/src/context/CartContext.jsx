@@ -8,16 +8,27 @@ export const CartProvider = ({ children }) => {
     const addToCart = (product) => {
         setCart((prev) => {
             const existing = prev.find(item => item.product.id === product.id);
+            
+            // 🔥 NAYA LOGIC: Check if adding exceeds available stock
             if (existing) {
+                if (existing.quantity >= product.stock) {
+                    alert(`⚠️ Limit reached! Is product ka sirf ${product.stock} stock hi bacha hai.`);
+                    return prev; // Do not increase quantity
+                }
                 return prev.map(item => 
                     item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
                 );
             }
+
+            if (product.stock <= 0) {
+                alert("⚠️ Yeh product out of stock hai!");
+                return prev;
+            }
+
             return [...prev, { product, quantity: 1 }];
         });
     };
 
-    // NEW: Decrease quantity or remove if it hits 0
     const decreaseQuantity = (productId) => {
         setCart((prev) => {
             const existing = prev.find(item => item.product.id === productId);

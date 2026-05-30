@@ -10,7 +10,7 @@ import Cart from './pages/Cart';
 import Login from './pages/Login';
 import MyOrders from './pages/MyOrders';
 import Profile from './pages/Profile';
-
+import AdminAddProduct from './pages/AdminAddProduct';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -26,10 +26,17 @@ function App() {
                                     <Route path="/" element={<Home />} />
                                     <Route path="/login" element={<Login />} />
                                     <Route path="/cart" element={<Cart />} />
+                                    
+                                    {/* Normal User Protected Routes */}
                                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                                     <Route path="/orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
                                     
-                                
+                                    {/* 🔥 ADMIN ONLY Protected Route 🔥 */}
+                                    <Route path="/add-product" element={
+                                        <ProtectedRoute requireAdmin={true}>
+                                            <AdminAddProduct />
+                                        </ProtectedRoute>
+                                    } />
                                 </Routes>
                             </main>
                             <Footer />

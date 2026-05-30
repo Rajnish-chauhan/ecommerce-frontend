@@ -11,6 +11,7 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
         return <Navigate to="/login" replace />;
     }
 
+    
     // 2. If the page requires Admin, and the user is NOT an Admin, kick them to Home
     if (requireAdmin && user.role !== 'ADMIN') {
         alert("Access Denied: You do not have Admin privileges.");
