@@ -25,9 +25,9 @@ export default function Login() {
             if (isLogin) {
                 const response = await axiosClient.post('/users/login', { email, password });
                 if (!response.data || response.data === "") throw new Error("Invalid Credentials");
-                
-                login(response.data); 
-                
+
+                login(response.data);
+
                 if (location.state?.returnToCart) {
                     navigate('/cart');
                 } else {
@@ -36,9 +36,9 @@ export default function Login() {
             } else {
                 const response = await axiosClient.post('/users/register', { name, email, dob, password });
                 if (!response.data || response.data === "") throw new Error("Registration Failed");
-                
+
                 alert("✅ Account Created Successfully! Please Sign In.");
-                setIsLogin(true); 
+                setIsLogin(true);
                 setPassword('');
             }
         } catch (error) {
@@ -75,7 +75,7 @@ export default function Login() {
                     <label className="block mb-1 text-sm font-bold text-slate-700">Password</label>
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" placeholder="••••••••" />
                 </div>
-                
+
                 <button type="button" onClick={handleSubmit} disabled={loading} className="w-full p-3.5 mt-2 font-bold text-white shadow-md bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:bg-slate-400 cursor-pointer">
                     {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
                 </button>
@@ -92,10 +92,10 @@ export default function Login() {
                 <div className="grow h-px bg-slate-200"></div>OR<div className="grow h-px bg-slate-200"></div>
             </div>
 
-            <button 
+            <button
                 type="button"
-                onClick={() => window.location.href = "http://localhost:8080/oauth2/authorization/google"} 
-                className="flex items-center justify-center w-full p-3.5 font-bold transition bg-white border border-slate-200 shadow-sm gap-3 rounded-xl text-slate-700 hover:bg-slate-50 cursor:pointer"
+                onClick={() => window.location.href = "http://localhost:8080/oauth2/authorization/google"}
+                className="flex items-center justify-center w-full p-3.5 font-bold transition bg-white border border-slate-200 shadow-sm gap-3 rounded-xl text-slate-700 hover:bg-slate-50 cursor-pointer"
             >
                 <svg viewBox="0 0 48 48" className="w-5 h-5">
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>

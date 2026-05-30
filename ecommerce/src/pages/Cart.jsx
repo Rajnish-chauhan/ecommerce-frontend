@@ -30,8 +30,16 @@ export default function Cart() {
     const handlePayment = async () => {
         if (cart.length === 0) return;
         
+        // 1. Check if user is logged in
         if (!user) {
             navigate('/login', { state: { returnToCart: true } });
+            return;
+        }
+
+        // 🔥 2. NAYA CHECK: ADDRESS VALIDATION 🔥
+        if (!user.address || user.address.trim() === "") {
+            alert("⚠️ Order place karne se pehle apna Delivery Address set karna zaroori hai. Kripya apna Profile update karein!");
+            navigate('/profile'); // User ko seedha Profile page par bhej do
             return;
         }
 
@@ -131,7 +139,6 @@ export default function Cart() {
                             Total to Pay: <span className="text-indigo-600">₹{totalAmount.toLocaleString('en-IN')}</span>
                         </div>
 
-                        {/* 🔥 HINGLISH BUTTON TEXT 🔥 */}
                         <button 
                             onClick={handlePayment} 
                             disabled={loading || cart.length === 0}
