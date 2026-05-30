@@ -37,7 +37,7 @@ export default function Login() {
                 const response = await axiosClient.post('/users/register', { name, email, dob, password });
                 if (!response.data || response.data === "") throw new Error("Registration Failed");
 
-                alert("✅ Account Created Successfully! Please Sign In.");
+                alert("✅ Account Created Successfully! Please Sign In");
                 setIsLogin(true);
                 setPassword('');
             }

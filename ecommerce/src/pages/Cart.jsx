@@ -38,7 +38,7 @@ export default function Cart() {
 
         // 🔥 2. NAYA CHECK: ADDRESS VALIDATION 🔥
         if (!user.address || user.address.trim() === "") {
-            alert("⚠️ Order place karne se pehle apna Delivery Address set karna zaroori hai. Kripya apna Profile update karein!");
+            alert("⚠️ Please set address to place your Order");
             navigate('/profile'); // User ko seedha Profile page par bhej do
             return;
         }
@@ -47,7 +47,7 @@ export default function Cart() {
         try {
             const res = await loadRazorpayScript();
             if (!res) {
-                alert("❌ Razorpay SDK load nahi hua. Apna internet connection check karein.");
+                alert("❌plz check internet connection");
                 setLoading(false);
                 return;
             }
@@ -60,7 +60,7 @@ export default function Cart() {
                 const parsed = typeof orderResponse === 'string' ? JSON.parse(orderResponse) : orderResponse;
                 razorpayOrderId = parsed.id || parsed.get?.("id");
             } catch(e) {
-                console.log("Could not parse Razorpay order ID.", e);
+                console.log("Could not found order ID.", e);
             }
 
             const options = {
@@ -79,11 +79,11 @@ export default function Cart() {
                         // Save order to your MongoDB
                         await axiosClient.post(`/orders/place/${user.id}`, { productQuantities, totalAmount });
                         
-                        alert(`✅ Badhai ho! Order successfully place ho gaya.`);
+                        alert(`✅ Order successfully placed`);
                         clearCart(); 
                         navigate('/orders'); 
                     } catch (err) {
-                        alert("❌ Server par order save nahi ho paya.");
+                        alert("❌ Order not found");
                     }
                 },
                 prefill: {
@@ -95,13 +95,13 @@ export default function Cart() {
 
             const paymentObject = new window.Razorpay(options);
             paymentObject.on('payment.failed', function (response){
-                alert("❌ Payment fail ho gaya: " + response.error.description);
+                alert("❌ Payment failed: " + response.error.description);
             });
             paymentObject.open();
 
         } catch (error) {
             console.error(error);
-            alert("❌ Payment initialize hone mein error aayi.");
+            alert("❌ error in creating payment");
         } finally {
             setLoading(false);
         }
@@ -112,7 +112,7 @@ export default function Cart() {
             <h2 className="pb-4 mb-8 text-3xl font-black border-b border-slate-100 text-slate-800">Your Cart</h2>
             
             {cart.length === 0 ? (
-                <p className="py-10 font-medium text-center text-slate-500">Aapka cart khali hai.</p>
+                <p className="py-10 font-medium text-center text-slate-500">Cart Empty</p>
             ) : (
                 <div className="flex flex-col gap-6">
                     {filteredCart.map((item) => (
@@ -144,7 +144,7 @@ export default function Cart() {
                             disabled={loading || cart.length === 0}
                             className="flex items-center justify-center w-full px-12 py-4 text-lg font-bold text-white bg-rose-500 sm:w-auto rounded-xl hover:bg-rose-600 disabled:bg-slate-400 cursor-pointer"
                         >
-                            {loading ? 'Secure payment open ho raha hai...' : '⚡ Abhi Kharidein'}
+                            {loading ? 'Secure payment open ho raha hai...' : 'Buy Now'}
                         </button>
                     </div>
                 </div>

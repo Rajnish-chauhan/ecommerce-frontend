@@ -83,7 +83,7 @@ export default function Home() {
             <motion.div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" variants={containerVariants} initial="hidden" animate="show">
                 {filteredProducts.length === 0 ? (
                     <p className="py-10 font-medium text-center text-slate-500 col-span-full">
-                        "{searchQuery}" ya is category mein koi product nahi mila.
+                        "{searchQuery}" product not found
                     </p>
                 ) : (
                     filteredProducts.map((product) => (

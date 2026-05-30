@@ -15,7 +15,7 @@ export default function Navbar() {
         >
             <div className="flex flex-wrap items-center justify-between h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 gap-4">
                 <Link to="/" className="text-2xl font-black text-amber-400 tracking-tight shrink-0">
-                    ⚡ SastaHai
+                    SastaHai
                 </Link>
                 
                 <div className="flex-grow max-w-xl mx-4">

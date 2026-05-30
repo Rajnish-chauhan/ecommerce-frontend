@@ -26,7 +26,7 @@ export default function Profile() {
             alert("✅ Profile Details Updated Successfully!");
         } catch (err) {
             console.error(err);
-            alert("❌ Profile update failed. Check backend connection.");
+            alert("❌ Profile update failed. Retry");
         } finally {
             setLoading(false);
         }
