@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Custom scrollbar ya basic reset agar chahiye toh yahan likh sakte hain */
+body {
+  background-color: #f8fafc;
+}
