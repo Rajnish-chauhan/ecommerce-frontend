@@ -94,7 +94,7 @@ export default function Login() {
 
             <button
                 type="button"
-                onClick={() => window.location.href = "https://ecommerce-backend-cz73.onrender.com/login/oauth2/code/google"}
+                onClick={() => window.location.href = "https://ecommerce.rajnishsystems.in/login/oauth2/code/google"}
                 className="flex items-center justify-center w-full p-3.5 font-bold transition bg-white border border-slate-200 shadow-sm gap-3 rounded-xl text-slate-700 hover:bg-slate-50 cursor-pointer"
             >
                 <svg viewBox="0 0 48 48" className="w-5 h-5">
