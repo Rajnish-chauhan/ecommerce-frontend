@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('ecommerce_user', JSON.stringify(userData));
     };
 
-    // NAYA FUNCTION: Profile update ke baad local state change karne ke liye
+    //Profile update ke baad local state change karne ke liye
     const updateUser = (updatedData) => {
         const newData = { ...user, ...updatedData };
         setUser(newData);

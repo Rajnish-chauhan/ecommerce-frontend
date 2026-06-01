@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-    baseURL: 'http://localhost:8080',
+    baseURL: 'https://ecommerce.backend.rajnishsystems.in/',
     withCredentials: true, // Crucial for security and sessions
     headers: {
         'Content-Type': 'application/json'

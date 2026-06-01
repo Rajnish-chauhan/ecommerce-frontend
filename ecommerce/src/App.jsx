@@ -31,7 +31,7 @@ function App() {
                                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                                     <Route path="/orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
                                     
-                                    {/* 🔥 ADMIN ONLY Protected Route 🔥 */}
+                                    {/*  ADMIN ONLY Protected Route */}
                                     <Route path="/add-product" element={
                                         <ProtectedRoute requireAdmin={true}>
                                             <AdminAddProduct />

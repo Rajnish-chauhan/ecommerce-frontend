@@ -11,7 +11,7 @@ export default function Home() {
     const { searchQuery } = useContext(SearchContext);
     const { login } = useContext(AuthContext);
 
-    // Ye categories aapke backend DB se match karti hain
+    // backend DB se match 
     const categories = ['All', 'Electronics', 'Cloth', 'Grocery'];
 
     useEffect(() => {
@@ -42,7 +42,7 @@ export default function Home() {
         fetchProducts();
     }, [login]);
 
-// 🔥 SAFE FILTER LOGIC 🔥
+//  SAFE FILTER LOGIC
     const filteredProducts = products.filter(product => {
         const safeName = product?.name || ""; 
         const safeQuery = searchQuery || "";
@@ -63,7 +63,7 @@ export default function Home() {
                 Latest Products
             </motion.h1>
 
-            {/* 🔥 CATEGORY FILTER BUTTONS 🔥 */}
+            {/* CATEGORY FILTER BUTTONS  */}
             <motion.div 
                 className="flex flex-wrap justify-center gap-3 mb-10"
                 initial={{ opacity: 0, y: -10 }} 

@@ -9,7 +9,7 @@ export const CartProvider = ({ children }) => {
         setCart((prev) => {
             const existing = prev.find(item => item.product.id === product.id);
             
-            // 🔥 NAYA LOGIC: Check if adding exceeds available stock
+            //Check if adding exceeds available stock
             if (existing) {
                 if (existing.quantity >= product.stock) {
                     alert(`⚠️ Limit reached! Is product ka sirf ${product.stock} stock hi bacha hai.`);
