@@ -33,7 +33,7 @@ export default function ProductCard({ product }) {
                     {product?.category || "General"}
                 </span>
                 
-                {/* 🔥 Out of Stock Badge on Image 🔥 */}
+                {/*  Out of Stock Badge on Image  */}
                 {isOutOfStock && (
                     <span className="absolute top-3 right-3 px-3 py-1 text-xs font-bold text-white uppercase bg-rose-500 rounded-full shadow-sm">
                         Sold Out
@@ -56,7 +56,7 @@ export default function ProductCard({ product }) {
                 
                 <div className="flex flex-col mt-auto gap-3">
                     {isOutOfStock ? (
-                        // 🔥 Out of Stock Button State 🔥
+                        //  Out of Stock Button State 
                         <button disabled className="w-full py-2.5 font-bold text-slate-400 bg-slate-100 border border-slate-200 rounded-xl cursor-not-allowed">
                             🚫 Out of Stock
                         </button>
