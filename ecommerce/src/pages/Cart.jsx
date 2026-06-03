@@ -65,7 +65,7 @@ export default function Cart() {
 
             const options = {
                 // 🔥 REPLACE THIS WITH YOUR REAL RAZORPAY TEST KEY ID 🔥
-                key:`"VITE_RAZORPAY_KEY_ID"`, 
+                key:"rzp_test_Swr8QaHErZUT7f", 
                 amount: totalAmount * 100, 
                 currency: "INR",
                 name: "SastaHai",
