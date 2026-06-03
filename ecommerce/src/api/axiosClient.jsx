@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-    baseURL: 'https://ecommerce-gjjv.onrender.com.com',
+    baseURL: 'https://ecommerce-gjjv.onrender.com',
     withCredentials: true, // Crucial for security and sessions
     headers: {
         'Content-Type': 'application/json'
