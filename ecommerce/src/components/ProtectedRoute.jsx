@@ -1,47 +1,21 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Cart from './pages/Cart';
-import Profile from './pages/Profile';
-import MyOrders from './pages/MyOrders';
-import AdminAddProduct from './pages/AdminAddProduct';
-import ProtectedRoute from './components/ProtectedRoute'; // Bring in your protected route
+import { useContext } from 'react';
+import { Navigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
-export default function App() {
-    return (
-        <BrowserRouter>
-            <Navbar />
-            <main className="min-h-screen px-4 pt-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <Routes>
-                    {/* Public Routes */}
-                    <Route path="/" element={<Home />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/cart" element={<Cart />} />
-                    
-                    {/*  PROTECTED ROUTES: Wrap sensitive pages to prevent crashes  */}
-                    <Route path="/profile" element={
-                        <ProtectedRoute>
-                            <Profile />
-                        </ProtectedRoute>
-                    } />
-                    
-                    <Route path="/orders" element={
-                        <ProtectedRoute>
-                            <MyOrders />
-                        </ProtectedRoute>
-                    } />
-                    
-                    {/* Admin Only Route */}
-                    <Route path="/add-product" element={
-                        <ProtectedRoute requireAdmin={true}>
-                            <AdminAddProduct />
-                        </ProtectedRoute>
-                    } />
-                </Routes>
-            </main>
-            <Footer />
-        </BrowserRouter>
-    );
+export default function ProtectedRoute({ children, requireAdmin = false }) {
+    const { user } = useContext(AuthContext);
+
+    // 1. If not logged in, kick them to the login page
+    if (!user) {
+        return <Navigate to="/login" replace />;
+    }
+
+    // 2. If the page requires Admin, and the user is NOT an Admin, kick them to Home
+    if (requireAdmin && user.role !== 'ADMIN') {
+        alert("Access Denied: You do not have Admin privileges.");
+        return <Navigate to="/" replace />;
+    }
+
+    // 3. If they pass the checks, show them the page
+    return children;
 }

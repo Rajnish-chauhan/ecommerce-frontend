@@ -1,4 +1,11 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
+
+// Import Context Providers
+import { AuthProvider } from './context/AuthContext';
+import { SearchProvider } from './context/SearchContext';
+import { CartProvider } from './context/CartContext';
+
+// Import Components & Pages
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -8,41 +15,49 @@ import Profile from './pages/Profile';
 import MyOrders from './pages/MyOrders';
 import AdminAddProduct from './pages/AdminAddProduct';
 import ProtectedRoute from './components/ProtectedRoute';
-import Navbar from './components/Navbar';
 
 export default function App() {
     return (
-        <HashRouter>
-            <Navbar />
-            <main className="min-h-screen px-4 pt-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <Routes>
-                    {/* Public Routes */}
-                    <Route path="/" element={<Home />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/cart" element={<Cart />} />
+        /* 🔥 Wrap the entire app in your Context Providers 🔥 */
+        <AuthProvider>
+            <SearchProvider>
+                <CartProvider>
                     
-                    {/* Protected Routes (Stops crashes if not logged in) */}
-                    <Route path="/profile" element={
-                        <ProtectedRoute>
-                            <Profile />
-                        </ProtectedRoute>
-                    } />
-                    
-                    <Route path="/orders" element={
-                        <ProtectedRoute>
-                            <MyOrders />
-                        </ProtectedRoute>
-                    } />
-                    
-                    {/* Admin Only Route */}
-                    <Route path="/add-product" element={
-                        <ProtectedRoute requireAdmin={true}>
-                            <AdminAddProduct />
-                        </ProtectedRoute>
-                    } />
-                </Routes>
-            </main>
-            <Footer />
-        </HashRouter>
+                    <HashRouter>
+                        <Navbar />
+                        <main className="min-h-screen px-4 pt-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                            <Routes>
+                                {/* Public Routes */}
+                                <Route path="/" element={<Home />} />
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/cart" element={<Cart />} />
+                                
+                                {/* Protected Routes */}
+                                <Route path="/profile" element={
+                                    <ProtectedRoute>
+                                        <Profile />
+                                    </ProtectedRoute>
+                                } />
+                                
+                                <Route path="/orders" element={
+                                    <ProtectedRoute>
+                                        <MyOrders />
+                                    </ProtectedRoute>
+                                } />
+                                
+                                {/* Admin Only Route */}
+                                <Route path="/add-product" element={
+                                    <ProtectedRoute requireAdmin={true}>
+                                        <AdminAddProduct />
+                                    </ProtectedRoute>
+                                } />
+                            </Routes>
+                        </main>
+                        <Footer />
+                    </HashRouter>
+
+                </CartProvider>
+            </SearchProvider>
+        </AuthProvider>
     );
 }
