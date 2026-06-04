@@ -13,12 +13,14 @@ export default function Login() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [dob, setDob] = useState('');
+    const [address, setAddress] = useState(''); // 🔥 Added Address State
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async () => {
         if (isLogin && (!email || !password)) return alert("⚠️ Please enter Email and Password.");
-        if (!isLogin && (!name || !email || !dob || !password)) return alert("⚠️ Please fill all details.");
+        // 🔥 Make Address mandatory for Registration
+        if (!isLogin && (!name || !email || !dob || !address || !password)) return alert("⚠️ Please fill all details including address.");
 
         setLoading(true);
         try {
@@ -34,7 +36,8 @@ export default function Login() {
                     navigate('/');
                 }
             } else {
-                const response = await axiosClient.post('/users/register', { name, email, dob, password });
+                // 🔥 Send Address to Backend
+                const response = await axiosClient.post('/users/register', { name, email, dob, address, password });
                 if (!response.data || response.data === "") throw new Error("Registration Failed");
 
                 alert("✅ Account Created Successfully! Please Sign In");
@@ -64,6 +67,11 @@ export default function Login() {
                         <div>
                             <label className="block mb-1 text-sm font-bold text-slate-700">Date of Birth</label>
                             <input type="date" value={dob} onChange={(e) => setDob(e.target.value)} className="w-full p-3 border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" />
+                        </div>
+                        {/* 🔥 Added Address Input */}
+                        <div>
+                            <label className="block mb-1 text-sm font-bold text-slate-700">Delivery Address</label>
+                            <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows="2" className="w-full p-3 border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" placeholder="Enter full address" />
                         </div>
                     </>
                 )}
