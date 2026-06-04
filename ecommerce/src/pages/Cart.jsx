@@ -30,16 +30,14 @@ export default function Cart() {
     const handlePayment = async () => {
         if (cart.length === 0) return;
 
-        // 1. Check if user is logged in
         if (!user) {
             navigate('/login', { state: { returnToCart: true } });
             return;
         }
 
-        // 🔥 2. NAYA CHECK: ADDRESS VALIDATION 🔥
-        if (!user.address || user.address.trim() === "") {
+        if (!user?.address || user?.address.trim() === "") {
             alert("⚠️ Please set address to place your Order");
-            navigate('/profile'); // User ko seedha Profile page par bhej do
+            navigate('/profile'); 
             return;
         }
 
@@ -47,12 +45,11 @@ export default function Cart() {
         try {
             const res = await loadRazorpayScript();
             if (!res) {
-                alert("❌plz check internet connection");
+                alert("❌ plz check internet connection");
                 setLoading(false);
                 return;
             }
 
-            // Create order on your Spring Boot backend
             const { data: orderResponse } = await axiosClient.post('/api/payment/create-order', { amount: totalAmount });
 
             let razorpayOrderId = "";
@@ -72,13 +69,9 @@ export default function Cart() {
                 order_id: razorpayOrderId,
                 handler: async function (response) {
                     try {
-                        // 1. Check what Razorpay sent back
-                        console.log("Razorpay Success Response:", response);
-
                         const productQuantities = {};
                         cart.forEach(item => { productQuantities[item.product.id] = item.quantity; });
 
-                        // 2. Send the Razorpay verification details to your backend
                         await axiosClient.post(`/orders/place/${user.id}`, {
                             productQuantities,
                             totalAmount,
@@ -87,19 +80,17 @@ export default function Cart() {
                             razorpay_signature: response.razorpay_signature
                         });
 
-                        // 3. This will now run if the backend responds with a success status (200 OK)
                         alert(`✅ Order successfully placed`);
                         clearCart();
                         navigate('/orders');
                     } catch (err) {
-                        // 4. Log the actual error so you can see why it failed
                         console.error("Order API Error:", err.response?.data || err.message);
                         alert("❌ Payment received, but failed to save order on server.");
                     }
                 },
                 prefill: {
-                    name: user.name,
-                    email: user.email,
+                    name: user?.name || "",
+                    email: user?.email || "",
                 },
                 theme: { color: "#1e1b4b" }
             };
@@ -150,11 +141,7 @@ export default function Cart() {
                             Total to Pay: <span className="text-indigo-600">₹{totalAmount.toLocaleString('en-IN')}</span>
                         </div>
 
-                        <button
-                            onClick={handlePayment}
-                            disabled={loading || cart.length === 0}
-                            className="flex items-center justify-center w-full px-12 py-4 text-lg font-bold text-white bg-rose-500 sm:w-auto rounded-xl hover:bg-rose-600 disabled:bg-slate-400 cursor-pointer"
-                        >
+                        <button onClick={handlePayment} disabled={loading || cart.length === 0} className="flex items-center justify-center w-full px-12 py-4 text-lg font-bold text-white bg-rose-500 sm:w-auto rounded-xl hover:bg-rose-600 disabled:bg-slate-400 cursor-pointer">
                             {loading ? 'Secure payment open ho raha hai...' : 'Buy Now'}
                         </button>
                     </div>

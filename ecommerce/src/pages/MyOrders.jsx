@@ -10,7 +10,11 @@ export default function MyOrders() {
 
     useEffect(() => {
         const fetchMyOrders = async () => {
-            if (!user) return;
+            if (!user || !user?.id) {
+                setLoading(false);
+                return;
+            }
+            
             try {
                 const response = await axiosClient.get(`/orders/user/${user.id}`);
                 setOrders(response.data);
