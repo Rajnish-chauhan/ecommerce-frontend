@@ -8,6 +8,7 @@ import Profile from './pages/Profile';
 import MyOrders from './pages/MyOrders';
 import AdminAddProduct from './pages/AdminAddProduct';
 import ProtectedRoute from './components/ProtectedRoute';
+import Navbar from './components/Navbar';
 
 export default function App() {
     return (
