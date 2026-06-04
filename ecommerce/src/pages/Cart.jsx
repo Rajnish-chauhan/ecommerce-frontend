@@ -142,7 +142,7 @@ export default function Cart() {
                         </div>
 
                         <button onClick={handlePayment} disabled={loading || cart.length === 0} className="flex items-center justify-center w-full px-12 py-4 text-lg font-bold text-white bg-rose-500 sm:w-auto rounded-xl hover:bg-rose-600 disabled:bg-slate-400 cursor-pointer">
-                            {loading ? 'Secure payment open ho raha hai...' : 'Buy Now'}
+                            {loading ? 'Secure payment opening...' : 'Buy Now'}
                         </button>
                     </div>
                 </div>
