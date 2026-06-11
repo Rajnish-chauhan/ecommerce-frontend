@@ -110,7 +110,23 @@ export default function Login() {
                         </div>
                         <div>
                             <label className="block mb-1 text-sm font-bold text-slate-700">Password</label>
-                            <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" placeholder="••••••••" />
+                            <div className="relative">
+                                <input 
+                                    type={showPassword ? "text" : "password"} 
+                                    value={password} 
+                                    onChange={(e) => setPassword(e.target.value)} 
+                                    className="w-full p-3 pr-10 border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" 
+                                    placeholder="••••••••" 
+                                />
+                                <button 
+                                    type="button" 
+                                    onClick={() => setShowPassword(!showPassword)} 
+                                    className="absolute inset-y-0 right-3 flex items-center text-xl hover:scale-110 transition-transform cursor-pointer"
+                                    title={showPassword ? "Hide password" : "Show password"}
+                                >
+                                    {showPassword ? "🙈" : "👁️"}
+                                </button>
+                            </div>
                         </div>
                         <button onClick={handleLogin} disabled={loading} className="w-full p-3.5 mt-2 font-bold text-white shadow-md bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:bg-slate-400 cursor-pointer">
                             {loading ? 'Processing...' : 'Sign In'}
@@ -164,7 +180,23 @@ export default function Login() {
                                 </div>
                                 <div>
                                     <label className="block mb-1 text-sm font-bold text-slate-700">Set Password</label>
-                                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 border border-slate-200 outline-none rounded-xl" placeholder="••••••••" />
+                                    <div className="relative">
+                                        <input 
+                                            type={showPassword ? "text" : "password"} 
+                                            value={password} 
+                                            onChange={(e) => setPassword(e.target.value)} 
+                                            className="w-full p-3 pr-10 border border-slate-200 outline-none rounded-xl" 
+                                            placeholder="••••••••" 
+                                        />
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setShowPassword(!showPassword)} 
+                                            className="absolute inset-y-0 right-3 flex items-center text-xl hover:scale-110 transition-transform cursor-pointer"
+                                            title={showPassword ? "Hide password" : "Show password"}
+                                        >
+                                            {showPassword ? "🙈" : "👁️"}
+                                        </button>
+                                    </div>
                                 </div>
                                 <button onClick={handleRegister} disabled={loading} className="w-full p-3.5 font-bold text-white shadow-md bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:bg-slate-400">
                                     {loading ? 'Creating Account...' : 'Create Account'}
