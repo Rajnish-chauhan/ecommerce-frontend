@@ -1,3 +1,4 @@
+import URL_TEST from "../jsconfig";
 export default function Footer() {
     return (
         <footer className="py-10 mt-10 bg-slate-900 text-slate-400">

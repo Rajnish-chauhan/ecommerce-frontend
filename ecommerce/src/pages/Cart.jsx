@@ -27,7 +27,8 @@ export default function Cart() {
         });
     };
 
-    const handlePayment = async () => {
+    // 🔥 NEW DIRECT CHECKOUT FLOW (No OTP)
+    const handleCheckout = () => {
         if (cart.length === 0) return;
 
         if (!user) {
@@ -36,16 +37,22 @@ export default function Cart() {
         }
 
         if (!user?.address || user?.address.trim() === "") {
-            alert("⚠️ Please set address to place your Order");
-            navigate('/profile'); 
+            alert("⚠️ Please set address in your profile to place an order.");
+            navigate('/profile');
             return;
         }
 
+        // Agar user logged in hai aur address bhi hai, toh sidha payment start karo
+        handlePayment();
+    };
+
+    // Razorpay Payment Handler
+    const handlePayment = async () => {
         setLoading(true);
         try {
             const res = await loadRazorpayScript();
             if (!res) {
-                alert("❌ plz check internet connection");
+                alert("❌ Please check your internet connection. Razorpay failed to load.");
                 setLoading(false);
                 return;
             }
@@ -57,11 +64,11 @@ export default function Cart() {
                 const parsed = typeof orderResponse === 'string' ? JSON.parse(orderResponse) : orderResponse;
                 razorpayOrderId = parsed.id || parsed.get?.("id");
             } catch (e) {
-                console.log("Could not found order ID.", e);
+                console.log("Could not find order ID.", e);
             }
 
             const options = {
-                key: "rzp_test_Swr8QaHErZUT7f",
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
                 amount: totalAmount * 100,
                 currency: "INR",
                 name: "SastaHai",
@@ -82,7 +89,7 @@ export default function Cart() {
 
                         alert(`✅ Order successfully placed`);
                         clearCart();
-                        navigate('/orders');
+                        navigate('/orders'); // Yahan route match kar lijiye (kya yeh '/my-orders' hai ya '/orders'?)
                     } catch (err) {
                         console.error("Order API Error:", err.response?.data || err.message);
                         alert("❌ Payment received, but failed to save order on server.");
@@ -103,7 +110,7 @@ export default function Cart() {
 
         } catch (error) {
             console.error(error);
-            alert("❌ error in creating payment");
+            alert("❌ Error in creating payment");
         } finally {
             setLoading(false);
         }
@@ -125,9 +132,9 @@ export default function Cart() {
                             </div>
 
                             <div className="flex items-center p-2 bg-white border border-slate-200 shadow-sm gap-3 rounded-lg shrink-0">
-                                <button onClick={() => decreaseQuantity(item.product.id)} className="flex items-center justify-center w-8 h-8 font-bold rounded bg-slate-50 text-indigo-600 shadow-sm">-</button>
+                                <button onClick={() => decreaseQuantity(item.product.id)} className="flex items-center justify-center w-8 h-8 font-bold rounded bg-slate-50 text-indigo-600 shadow-sm cursor-pointer">-</button>
                                 <span className="w-6 font-bold text-center text-slate-800">{item.quantity}</span>
-                                <button onClick={() => addToCart(item.product)} className="flex items-center justify-center w-8 h-8 font-bold rounded bg-slate-50 text-indigo-600 shadow-sm">+</button>
+                                <button onClick={() => addToCart(item.product)} className="flex items-center justify-center w-8 h-8 font-bold rounded bg-slate-50 text-indigo-600 shadow-sm cursor-pointer">+</button>
                             </div>
 
                             <div className="w-full text-center shrink-0 sm:w-32 sm:text-right">
@@ -141,8 +148,9 @@ export default function Cart() {
                             Total to Pay: <span className="text-indigo-600">₹{totalAmount.toLocaleString('en-IN')}</span>
                         </div>
 
-                        <button onClick={handlePayment} disabled={loading || cart.length === 0} className="flex items-center justify-center w-full px-12 py-4 text-lg font-bold text-white bg-rose-500 sm:w-auto rounded-xl hover:bg-rose-600 disabled:bg-slate-400 cursor-pointer">
-                            {loading ? 'Secure payment opening...' : 'Buy Now'}
+                        {/* 🔥 Button ab sidha handleCheckout call karega */}
+                        <button onClick={handleCheckout} disabled={loading || cart.length === 0} className="flex items-center justify-center w-full px-12 py-4 text-lg font-bold text-white bg-rose-500 sm:w-auto rounded-xl hover:bg-rose-600 disabled:bg-slate-400 cursor-pointer">
+                            {loading ? 'Processing...' : 'Buy Now'}
                         </button>
                     </div>
                 </div>

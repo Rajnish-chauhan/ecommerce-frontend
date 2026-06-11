@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import axiosClient from '../api/axiosClient';
 import { motion } from 'framer-motion';
 
 export default function AdminAddProduct() {
+    const { user } = useContext(AuthContext); 
     const [product, setProduct] = useState({ 
         name: '', 
         description: '', 
@@ -16,22 +18,24 @@ export default function AdminAddProduct() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        if (Number(product.price) > 10000) {
-            setMessage("❌ Price cannot exceed ₹10,000");
-            return;
-        }
 
         setLoading(true);
         setMessage('');
 
         try {
-            await axiosClient.post('/products/add', product);
-            setMessage(`✅ Product successfully added to MongoDB!`);
+            // 🔥 Backend verification ke liye 'X-User-Id' header bhej rahe hain
+            await axiosClient.post('/products/add', product, {
+                headers: {
+                    'X-User-Id': user?.id || '' 
+                }
+            });
+            
+            setMessage(`✅ Product successfully added!`);
             // Form clear karne ke liye
             setProduct({ name: '', description: '', price: '', stock: '', category: '', imageUrl: '' });
         } catch (error) {
-            setMessage("❌ Failed to add product. Check backend connection.");
+            console.error(error);
+            setMessage(error.response?.data?.message || "❌ Failed to add product. Check admin permissions.");
         } finally {
             setLoading(false);
         }
@@ -74,15 +78,15 @@ export default function AdminAddProduct() {
                     />
                 </div>
                 
-                <div className="flex flex-col sm:flex-row gap-5">
+                <div className="flex flex-col gap-5 sm:flex-row">
                     <div className="flex-1">
-                        <label className="block mb-1 text-sm font-bold text-slate-700">Price (Max ₹10,000)</label>
+                        {/* 🔥 Price limit label aur max attribute hata diya */}
+                        <label className="block mb-1 text-sm font-bold text-slate-700">Price (₹)</label>
                         <input 
                             type="number" 
                             value={product.price} 
                             onChange={(e)=>setProduct({...product, price: e.target.value})} 
                             className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" 
-                            max="10000" 
                             required 
                         />
                     </div>
@@ -127,7 +131,7 @@ export default function AdminAddProduct() {
                 <button 
                     type="submit" 
                     disabled={loading} 
-                    className="w-full p-4 mt-4 font-bold text-white transition shadow-md bg-indigo-900 rounded-xl hover:bg-indigo-800 disabled:bg-slate-400 cursor-pointer"
+                    className="w-full p-4 mt-4 font-bold text-white transition shadow-md cursor-pointer bg-indigo-900 rounded-xl hover:bg-indigo-800 disabled:bg-slate-400"
                 >
                     {loading ? 'Saving to MongoDB...' : '+ Insert Product'}
                 </button>

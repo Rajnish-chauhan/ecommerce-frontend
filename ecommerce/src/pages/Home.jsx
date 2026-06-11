@@ -14,13 +14,14 @@ export default function Home() {
     // backend DB se match 
     const categories = ['All', 'Electronics', 'Cloth', 'Grocery'];
 
-    useEffect(() => {
+  useEffect(() => {
         // Catch Google Redirect Parameter
         const urlParams = new URLSearchParams(window.location.search);
         const emailParam = urlParams.get('email');
         
         if (emailParam) {
-            axiosClient.get(`/users/get-by-email?email=${emailParam}`)
+            // 🔥 FIX 1: URL path ko '/users/by-email' kar diya (backend ke hisaab se)
+            axiosClient.get(`/users/by-email?email=${emailParam}`)
                 .then(res => {
                     if(res.data) {
                         login(res.data);
@@ -33,7 +34,8 @@ export default function Home() {
         // Fetch Default Products
         const fetchProducts = async () => {
             try {
-                const response = await axiosClient.get('/products');
+                // 🔥 FIX 2: Path ko '/products' se badal kar '/products/all' kar diya
+                const response = await axiosClient.get('/products/all');
                 setProducts(response.data);
             } catch (error) {
                 console.error("Error fetching products", error);
