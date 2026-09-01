@@ -1,6 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
 import axiosClient from '../api/axiosClient';
-import { motion } from 'framer-motion';
 import { AuthContext } from '../context/AuthContext';
 
 export default function MyOrders() {
@@ -30,18 +29,18 @@ export default function MyOrders() {
 
     return (
         <div className="max-w-4xl mx-auto">
-            <motion.h2 className="pb-4 mb-8 text-3xl font-black border-b text-slate-800" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+            <h2 className="pb-4 mb-8 text-3xl font-black border-b text-slate-800">
                 My Order History
-            </motion.h2>
+            </h2>
 
             {loading ? (
                 <p className="font-medium text-center text-slate-500">Loading your orders...</p>
             ) : orders.length === 0 ? (
-                <motion.div className="py-10 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="py-10 text-center">
                     <p className="text-lg font-medium text-slate-500">You haven't placed any orders yet. 🛒</p>
-                </motion.div>
+                </div>
             ) : (
-                <motion.div className="flex flex-col gap-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="flex flex-col gap-6">
                     {orders.map((order) => (
                         <div key={order.id} className="flex flex-col items-start justify-between p-6 transition bg-white border border-slate-100 shadow-sm sm:flex-row sm:items-center rounded-2xl hover:shadow-md gap-4">
                             <div>
@@ -57,7 +56,7 @@ export default function MyOrders() {
                             </div>
                         </div>
                     ))}
-                </motion.div>
+                </div>
             )}
         </div>
     );

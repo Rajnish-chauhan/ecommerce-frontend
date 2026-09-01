@@ -1,7 +1,6 @@
 import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import axiosClient from '../api/axiosClient';
-import { motion } from 'framer-motion';
 
 export default function Profile() {
     const { user, updateUser } = useContext(AuthContext);
@@ -32,7 +31,7 @@ export default function Profile() {
     };
 
     return (
-        <motion.div className="max-w-xl mx-auto p-8 mt-8 bg-white border border-slate-100 shadow-sm rounded-2xl" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="max-w-xl mx-auto p-8 mt-8 bg-white border border-slate-100 shadow-sm rounded-2xl">
             <div className="flex items-center gap-4 mb-8 pb-4 border-b border-slate-100">
                 <img src={user?.profileImageUrl || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="Profile" className="w-16 h-16 rounded-full border-4 border-indigo-100 object-cover" />
                 <h2 className="text-2xl font-black text-slate-800">My Profile</h2>
@@ -64,6 +63,6 @@ export default function Profile() {
                     {loading ? 'Saving Changes...' : 'Save Profile Details'}
                 </button>
             </div>
-        </motion.div>
+        </div>
     );
 }

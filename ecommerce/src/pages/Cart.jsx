@@ -3,7 +3,6 @@ import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import { SearchContext } from '../context/SearchContext';
 import axiosClient from '../api/axiosClient';
-import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 export default function Cart() {
@@ -117,7 +116,7 @@ export default function Cart() {
     };
 
     return (
-        <motion.div className="max-w-4xl p-6 mx-auto bg-white border border-slate-100 shadow-sm rounded-2xl md:p-10" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
+        <div className="max-w-4xl p-6 mx-auto bg-white border border-slate-100 shadow-sm rounded-2xl md:p-10">
             <h2 className="pb-4 mb-8 text-3xl font-black border-b border-slate-100 text-slate-800">Your Cart</h2>
 
             {cart.length === 0 ? (
@@ -155,6 +154,6 @@ export default function Cart() {
                     </div>
                 </div>
             )}
-        </motion.div>
+        </div>
     );
 }

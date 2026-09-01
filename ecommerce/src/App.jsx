@@ -18,7 +18,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
     return (
-        /* 🔥 Wrap the entire app in your Context Providers 🔥 */
+        /*  Wrap the entire app in your Context Providers  */
         <AuthProvider>
             <SearchProvider>
                 <CartProvider>

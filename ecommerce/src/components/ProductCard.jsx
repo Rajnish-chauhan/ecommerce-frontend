@@ -22,18 +22,20 @@ export default function ProductCard({ product }) {
     };
 
     return (
-        <div className="flex flex-col h-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group">
+        <div className="flex flex-col h-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
             <div className="relative flex items-center justify-center h-48 p-4 bg-slate-50 overflow-hidden">
                 <img 
                     src={product?.imageUrl || "https://via.placeholder.com/300"} 
                     alt={product?.name} 
-                    className={`object-contain max-h-full transition-transform duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : 'group-hover:scale-105'}`} 
+                    className={`object-contain max-h-full ${isOutOfStock ? 'opacity-50 grayscale' : ''}`} 
                 />
+                
+                {/* Category Badge */}
                 <span className="absolute top-3 left-3 px-3 py-1 text-xs font-bold text-indigo-700 uppercase bg-white/90 backdrop-blur-sm rounded-full shadow-sm">
                     {product?.category || "General"}
                 </span>
                 
-                {/*  Out of Stock Badge on Image  */}
+                {/* Out of Stock Badge */}
                 {isOutOfStock && (
                     <span className="absolute top-3 right-3 px-3 py-1 text-xs font-bold text-white uppercase bg-rose-500 rounded-full shadow-sm">
                         Sold Out
@@ -56,25 +58,25 @@ export default function ProductCard({ product }) {
                 
                 <div className="flex flex-col mt-auto gap-3">
                     {isOutOfStock ? (
-                        //  Out of Stock Button State 
+                        // Out of Stock Button State 
                         <button disabled className="w-full py-2.5 font-bold text-slate-400 bg-slate-100 border border-slate-200 rounded-xl cursor-not-allowed">
                             🚫 Out of Stock
                         </button>
                     ) : (
                         <>
                             {currentQuantity === 0 ? (
-                                <button onClick={() => addToCart(product)} className="w-full py-2.5 font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-xl hover:bg-indigo-100 transition cursor-pointer">
+                                <button onClick={() => addToCart(product)} className="w-full py-2.5 font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-xl hover:bg-indigo-100 cursor-pointer">
                                     🛒 Add to Cart
                                 </button>
                             ) : (
                                 <div className="flex items-center justify-between p-1.5 bg-indigo-50 border border-indigo-200 rounded-xl">
-                                    <button onClick={() => decreaseQuantity(product.id)} className="flex items-center justify-center w-10 h-10 text-xl font-bold text-indigo-600 bg-white rounded-lg shadow-sm hover:bg-indigo-600 hover:text-white transition cursor-pointer">-</button>
+                                    <button onClick={() => decreaseQuantity(product.id)} className="flex items-center justify-center w-10 h-10 text-xl font-bold text-indigo-600 bg-white rounded-lg shadow-sm hover:bg-indigo-600 hover:text-white cursor-pointer">-</button>
                                     <span className="font-bold text-indigo-900">{currentQuantity} in cart</span>
-                                    <button onClick={() => addToCart(product)} className="flex items-center justify-center w-10 h-10 text-xl font-bold text-indigo-600 bg-white rounded-lg shadow-sm hover:bg-indigo-600 hover:text-white transition cursor-pointer">+</button>
+                                    <button onClick={() => addToCart(product)} className="flex items-center justify-center w-10 h-10 text-xl font-bold text-indigo-600 bg-white rounded-lg shadow-sm hover:bg-indigo-600 hover:text-white cursor-pointer">+</button>
                                 </div>
                             )}
 
-                            <button onClick={handleBuyNow} className="flex items-center justify-center w-full gap-2 py-2.5 font-bold text-white bg-rose-500 rounded-xl shadow-md hover:bg-rose-600 transition cursor-pointer">
+                            <button onClick={handleBuyNow} className="flex items-center justify-center w-full gap-2 py-2.5 font-bold text-white bg-rose-500 rounded-xl shadow-md hover:bg-rose-600 cursor-pointer">
                                 ⚡ Buy Now
                             </button>
                         </>

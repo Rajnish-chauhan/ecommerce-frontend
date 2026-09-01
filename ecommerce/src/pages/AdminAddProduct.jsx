@@ -1,7 +1,6 @@
 import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import axiosClient from '../api/axiosClient';
-import { motion } from 'framer-motion';
 
 export default function AdminAddProduct() {
     const { user } = useContext(AuthContext); 
@@ -42,11 +41,7 @@ export default function AdminAddProduct() {
     };
 
     return (
-        <motion.div 
-            className="max-w-2xl p-8 mx-auto mt-8 bg-white border border-slate-100 shadow-sm rounded-2xl" 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }}
-        >
+        <div className="max-w-2xl p-8 mx-auto mt-8 bg-white border border-slate-100 shadow-sm rounded-2xl">
             <h2 className="pb-4 mb-6 text-2xl font-black border-b text-indigo-900">Add New Product (Admin)</h2>
             
             {message && (
@@ -80,7 +75,6 @@ export default function AdminAddProduct() {
                 
                 <div className="flex flex-col gap-5 sm:flex-row">
                     <div className="flex-1">
-                        {/* 🔥 Price limit label aur max attribute hata diya */}
                         <label className="block mb-1 text-sm font-bold text-slate-700">Price (₹)</label>
                         <input 
                             type="number" 
@@ -136,6 +130,6 @@ export default function AdminAddProduct() {
                     {loading ? 'Saving to MongoDB...' : '+ Insert Product'}
                 </button>
             </form>
-        </motion.div>
+        </div>
     );
 }
