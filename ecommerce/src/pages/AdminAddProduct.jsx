@@ -17,12 +17,10 @@ export default function AdminAddProduct() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         setLoading(true);
         setMessage('');
 
         try {
-            // 🔥 Backend verification ke liye 'X-User-Id' header bhej rahe hain
             await axiosClient.post('/products/add', product, {
                 headers: {
                     'X-User-Id': user?.id || '' 
@@ -30,11 +28,12 @@ export default function AdminAddProduct() {
             });
             
             setMessage(`✅ Product successfully added!`);
-            // Form clear karne ke liye
             setProduct({ name: '', description: '', price: '', stock: '', category: '', imageUrl: '' });
         } catch (error) {
             console.error(error);
-            setMessage(error.response?.data?.message || "❌ Failed to add product. Check admin permissions.");
+            const errData = error.response?.data;
+            const errMsg = errData?.message || (errData ? Object.values(errData)[0] : "Failed to add product. Check permissions.");
+            setMessage(`❌ Error: ${errMsg}`);
         } finally {
             setLoading(false);
         }
@@ -53,57 +52,28 @@ export default function AdminAddProduct() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <div>
                     <label className="block mb-1 text-sm font-bold text-slate-700">Product Name</label>
-                    <input 
-                        type="text" 
-                        value={product.name} 
-                        onChange={(e)=>setProduct({...product, name: e.target.value})} 
-                        className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" 
-                        required 
-                    />
+                    <input type="text" value={product.name} onChange={(e)=>setProduct({...product, name: e.target.value})} className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" required />
                 </div>
                 
                 <div>
                     <label className="block mb-1 text-sm font-bold text-slate-700">Description</label>
-                    <textarea 
-                        value={product.description} 
-                        onChange={(e)=>setProduct({...product, description: e.target.value})} 
-                        className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" 
-                        rows="3" 
-                        required 
-                    />
+                    <textarea value={product.description} onChange={(e)=>setProduct({...product, description: e.target.value})} className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" rows="3" required />
                 </div>
                 
                 <div className="flex flex-col gap-5 sm:flex-row">
                     <div className="flex-1">
                         <label className="block mb-1 text-sm font-bold text-slate-700">Price (₹)</label>
-                        <input 
-                            type="number" 
-                            value={product.price} 
-                            onChange={(e)=>setProduct({...product, price: e.target.value})} 
-                            className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" 
-                            required 
-                        />
+                        <input type="number" value={product.price} onChange={(e)=>setProduct({...product, price: e.target.value})} className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" required />
                     </div>
                     <div className="flex-1">
                         <label className="block mb-1 text-sm font-bold text-slate-700">Stock Quantity</label>
-                        <input 
-                            type="number" 
-                            value={product.stock} 
-                            onChange={(e)=>setProduct({...product, stock: e.target.value})} 
-                            className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" 
-                            required 
-                        />
+                        <input type="number" value={product.stock} onChange={(e)=>setProduct({...product, stock: e.target.value})} className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" required />
                     </div>
                 </div>
 
                 <div>
                     <label className="block mb-1 text-sm font-bold text-slate-700">Category</label>
-                    <select 
-                        value={product.category} 
-                        onChange={(e)=>setProduct({...product, category: e.target.value})} 
-                        className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" 
-                        required
-                    >
+                    <select value={product.category} onChange={(e)=>setProduct({...product, category: e.target.value})} className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" required>
                         <option value="" disabled>Select a category</option>
                         <option value="Electronics">Electronics</option>
                         <option value="Cloth">Cloth</option>
@@ -113,20 +83,10 @@ export default function AdminAddProduct() {
 
                 <div>
                     <label className="block mb-1 text-sm font-bold text-slate-700">Image URL</label>
-                    <input 
-                        type="url" 
-                        value={product.imageUrl} 
-                        onChange={(e)=>setProduct({...product, imageUrl: e.target.value})} 
-                        className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" 
-                        placeholder="https://example.com/image.jpg"
-                    />
+                    <input type="url" value={product.imageUrl} onChange={(e)=>setProduct({...product, imageUrl: e.target.value})} className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" placeholder="https://example.com/image.jpg" />
                 </div>
                 
-                <button 
-                    type="submit" 
-                    disabled={loading} 
-                    className="w-full p-4 mt-4 font-bold text-white transition shadow-md cursor-pointer bg-indigo-900 rounded-xl hover:bg-indigo-800 disabled:bg-slate-400"
-                >
+                <button type="submit" disabled={loading} className="w-full p-4 mt-4 font-bold text-white transition shadow-md cursor-pointer bg-indigo-900 rounded-xl hover:bg-indigo-800 disabled:bg-slate-400">
                     {loading ? 'Saving to MongoDB...' : '+ Insert Product'}
                 </button>
             </form>

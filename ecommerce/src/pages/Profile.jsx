@@ -8,7 +8,7 @@ export default function Profile() {
     const [name, setName] = useState(user?.name || '');
     const [dob, setDob] = useState(user?.dob || '');
     const [address, setAddress] = useState(user?.address || '');
-    const [password, setPassword] = useState(user?.password || '');
+    const [password, setPassword] = useState(''); // ✅ Password always starts blank now
     const [loading, setLoading] = useState(false);
 
     const handleUpdate = async () => {
@@ -22,18 +22,19 @@ export default function Profile() {
             });
             updateUser(res.data);
             alert("✅ Profile Details Updated Successfully!");
-        } catch (err) {
-            console.error(err);
-            alert("❌ Profile update failed. Retry");
+        } catch (error) {
+            const errData = error.response?.data;
+            const errMsg = errData?.message || (errData ? Object.values(errData)[0] : "Request Failed");
+            alert(`❌ Error: ${errMsg}`);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="max-w-xl mx-auto p-8 mt-8 bg-white border border-slate-100 shadow-sm rounded-2xl">
-            <div className="flex items-center gap-4 mb-8 pb-4 border-b border-slate-100">
-                <img src={user?.profileImageUrl || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="Profile" className="w-16 h-16 rounded-full border-4 border-indigo-100 object-cover" />
+        <div className="max-w-xl p-8 mx-auto mt-8 bg-white border border-slate-100 shadow-sm rounded-2xl">
+            <div className="flex items-center gap-4 pb-4 mb-8 border-b border-slate-100">
+                <img src={user?.profileImageUrl || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="Profile" className="object-cover w-16 h-16 border-4 border-indigo-100 rounded-full" />
                 <h2 className="text-2xl font-black text-slate-800">My Profile</h2>
             </div>
             
@@ -55,11 +56,11 @@ export default function Profile() {
                     <textarea className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" rows="3" placeholder="Enter your full address" value={address} onChange={e => setAddress(e.target.value)} />
                 </div>
                 <div>
-                    <label className="block mb-1 text-sm font-bold text-slate-700">Password</label>
-                    <input type="password" className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" value={password} onChange={e => setPassword(e.target.value)} />
+                    <label className="block mb-1 text-sm font-bold text-slate-700">New Password (Leave blank to keep current)</label>
+                    <input type="password" placeholder="••••••••" className="w-full p-3 transition border border-slate-200 outline-none rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
                 
-                <button onClick={handleUpdate} disabled={loading} className="w-full p-4 mt-2 font-bold text-white transition shadow-md bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:bg-slate-400 cursor-pointer">
+                <button onClick={handleUpdate} disabled={loading} className="w-full p-4 mt-2 font-bold text-white transition shadow-md cursor-pointer bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:bg-slate-400">
                     {loading ? 'Saving Changes...' : 'Save Profile Details'}
                 </button>
             </div>

@@ -26,7 +26,7 @@ export default function Cart() {
         });
     };
 
-    // 🔥 NEW DIRECT CHECKOUT FLOW (No OTP)
+    // NEW DIRECT CHECKOUT FLOW (No OTP)
     const handleCheckout = () => {
         if (cart.length === 0) return;
 
@@ -56,19 +56,22 @@ export default function Cart() {
                 return;
             }
 
+            // 1. Create order on backend
             const { data: orderResponse } = await axiosClient.post('/api/payment/create-order', { amount: totalAmount });
 
-            let razorpayOrderId = "";
-            try {
-                const parsed = typeof orderResponse === 'string' ? JSON.parse(orderResponse) : orderResponse;
-                razorpayOrderId = parsed.id || parsed.get?.("id");
-            } catch (e) {
-                console.log("Could not find order ID.", e);
+            // 2. Read the clean ID directly!
+            const razorpayOrderId = orderResponse.id;
+            
+            if (!razorpayOrderId) {
+                alert("❌ Backend failed to generate a valid Order ID.");
+                setLoading(false);
+                return;
             }
 
+            // 3. Configure Razorpay
             const options = {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                amount: totalAmount * 100,
+                amount: Math.round(totalAmount * 100), // ✅ Math.round prevents decimal crashes!
                 currency: "INR",
                 name: "SastaHai",
                 description: "Purchase from SastaHai",
@@ -88,7 +91,7 @@ export default function Cart() {
 
                         alert(`✅ Order successfully placed`);
                         clearCart();
-                        navigate('/orders'); // Yahan route match kar lijiye (kya yeh '/my-orders' hai ya '/orders'?)
+                        navigate('/orders'); 
                     } catch (err) {
                         console.error("Order API Error:", err.response?.data || err.message);
                         alert("❌ Payment received, but failed to save order on server.");
@@ -108,7 +111,7 @@ export default function Cart() {
             paymentObject.open();
 
         } catch (error) {
-            console.error(error);
+            console.error("Payment Error:", error);
             alert("❌ Error in creating payment");
         } finally {
             setLoading(false);
