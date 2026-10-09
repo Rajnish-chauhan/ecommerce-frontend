@@ -8,32 +8,13 @@ export default function Home() {
     const [products, setProducts] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('All'); 
     const { searchQuery } = useContext(SearchContext);
-    const { login } = useContext(AuthContext);
-
-    // backend DB se match 
+    
     const categories = ['All', 'Electronics', 'Cloth', 'Grocery'];
 
     useEffect(() => {
-        // Catch Google Redirect Parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const emailParam = urlParams.get('email');
-        
-        if (emailParam) {
-            // FIX 1: URL path ko '/users/by-email' kar diya (backend ke hisaab se)
-            axiosClient.get(`/users/by-email?email=${emailParam}`)
-                .then(res => {
-                    if(res.data) {
-                        login(res.data);
-                        window.history.replaceState(null, '', '/'); // Clean URL
-                    }
-                })
-                .catch(err => console.error("Google Login Catch Failed:", err));
-        }
-
         // Fetch Default Products
         const fetchProducts = async () => {
             try {
-                // FIX 2: Path ko '/products' se badal kar '/products/all' kar diya
                 const response = await axiosClient.get('/products/all');
                 setProducts(response.data);
             } catch (error) {
@@ -41,9 +22,8 @@ export default function Home() {
             }
         };
         fetchProducts();
-    }, [login]);
+    }, []); // Removed login dependency and duplicate OAuth logic
 
-    // SAFE FILTER LOGIC
     const filteredProducts = products.filter(product => {
         const safeName = product?.name || ""; 
         const safeQuery = searchQuery || "";
@@ -61,7 +41,6 @@ export default function Home() {
                 Latest Products
             </h1>
 
-            {/* CATEGORY FILTER BUTTONS  */}
             <div className="flex flex-wrap justify-center gap-3 mb-10">
                 {categories.map((category) => (
                     <button

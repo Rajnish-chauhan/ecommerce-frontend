@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import axiosClient from '../api/axiosClient'; // 🔥 Apne API client ko import karein
+import axiosClient from '../api/axiosClient';
 
 export const AuthContext = createContext();
 
@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('ecommerce_user', JSON.stringify(userData));
     };
 
-    // Profile update ke baad local state change karne ke liye
+    // Update user state and persist to local storage after profile updates
     const updateUser = (updatedData) => {
         const newData = { ...user, ...updatedData };
         setUser(newData);
@@ -26,25 +26,24 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('ecommerce_user');
     };
 
-    //  Google OAuth Success Handler
+    // Handle Google OAuth post-login redirect and fetch user profile
     useEffect(() => {
-        // URL se query parameters padhein
-        const urlParams = new URLSearchParams(window.location.search);
-        const emailFromUrl = urlParams.get('email');
+        // Read URL query parameters from standard path or HashRouter fragment
+        let emailFromUrl = new URLSearchParams(window.location.search).get('email');
+        if (!emailFromUrl && window.location.hash.includes('?')) {
+            const queryPart = window.location.hash.split('?')[1];
+            emailFromUrl = new URLSearchParams(queryPart).get('email');
+        }
 
-        // Agar URL mein email aaya hai (Google login ke baad)
         if (emailFromUrl) {
-            // Backend se full user details (image, name, id) fetch karein
-            axiosClient.get(`/users/by-email?email=${emailFromUrl}`)
+            axiosClient.get(`/users/by-email?email=${encodeURIComponent(emailFromUrl)}`)
                 .then(response => {
-                    // Pura user object context aur localStorage mein save ho jayega
-                    login(response.data); 
-                    
-                    // URL ko clean kar dein taaki refresh karne par baar-baar API call na ho
+                    login(response.data);
+                    // Remove query parameters from address bar to prevent repeated requests on refresh
                     window.history.replaceState({}, document.title, window.location.pathname);
                 })
                 .catch(error => {
-                    console.error("❌ Error fetching user data after Google Login:", error);
+                    console.error("Error retrieving user details after OAuth sign-in:", error);
                 });
         }
     }, []);

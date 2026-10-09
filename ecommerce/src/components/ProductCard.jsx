@@ -9,8 +9,6 @@ export default function ProductCard({ product }) {
     const safePrice = Number(product?.price) || 0;
     const cartItem = cart.find(item => item.product?.id === product?.id);
     const currentQuantity = cartItem ? cartItem.quantity : 0;
-    
-    // Check if product is out of stock completely
     const isOutOfStock = product?.stock <= 0;
 
     const handleBuyNow = () => {
@@ -22,62 +20,76 @@ export default function ProductCard({ product }) {
     };
 
     return (
-        <div className="flex flex-col h-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-            <div className="relative flex items-center justify-center h-48 p-4 bg-slate-50 overflow-hidden">
-                <img 
-                    src={product?.imageUrl || "https://via.placeholder.com/300"} 
-                    alt={product?.name} 
-                    className={`object-contain max-h-full ${isOutOfStock ? 'opacity-50 grayscale' : ''}`} 
+        <div className="flex flex-col h-full bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="relative flex items-center justify-center h-48 p-4 bg-slate-50">
+                <img
+                    src={product?.imageUrl || "https://via.placeholder.com/300"}
+                    alt={product?.name}
+                    className={`object-contain max-h-full transition-opacity ${isOutOfStock ? 'opacity-40 grayscale' : ''}`}
                 />
-                
-                {/* Category Badge */}
-                <span className="absolute top-3 left-3 px-3 py-1 text-xs font-bold text-indigo-700 uppercase bg-white/90 backdrop-blur-sm rounded-full shadow-sm">
+                <span className="absolute top-3 left-3 px-2.5 py-0.5 text-xs font-semibold text-slate-700 uppercase bg-white/90 border border-slate-200 rounded-md">
                     {product?.category || "General"}
                 </span>
-                
-                {/* Out of Stock Badge */}
+
                 {isOutOfStock && (
-                    <span className="absolute top-3 right-3 px-3 py-1 text-xs font-bold text-white uppercase bg-rose-500 rounded-full shadow-sm">
+                    <span className="absolute top-3 right-3 px-2.5 py-0.5 text-xs font-semibold text-rose-700 uppercase bg-rose-50 border border-rose-200 rounded-md">
                         Sold Out
                     </span>
                 )}
             </div>
-            
-            <div className="flex flex-col flex-grow p-5 justify-between">
+
+            <div className="flex flex-col flex-grow p-4 justify-between">
                 <div>
-                    <h2 className={`mb-2 text-lg font-bold leading-tight line-clamp-2 ${isOutOfStock ? 'text-slate-400' : 'text-slate-800'}`}>
+                    <h3 className={`font-semibold text-base leading-snug line-clamp-2 ${isOutOfStock ? 'text-slate-400' : 'text-slate-900'}`}>
                         {product?.name}
-                    </h2>
-                    <p className={`mb-4 text-2xl font-black ${isOutOfStock ? 'text-slate-400' : 'text-indigo-600'}`}>
+                    </h3>
+                    <p className={`mt-2 text-xl font-bold ${isOutOfStock ? 'text-slate-400' : 'text-slate-900'}`}>
                         ₹{safePrice.toLocaleString('en-IN')}
                     </p>
-                    <p className="text-sm font-semibold text-emerald-600 mb-2">
-                        {isOutOfStock ? '' : `Available Stock: ${product?.stock}`}
+                    <p className="mt-1 text-xs font-medium text-slate-500">
+                        {isOutOfStock ? 'Currently unavailable' : `Stock: ${product?.stock} units`}
                     </p>
                 </div>
-                
-                <div className="flex flex-col mt-auto gap-3">
+
+                <div className="flex flex-col mt-4 gap-2">
                     {isOutOfStock ? (
-                        // Out of Stock Button State 
-                        <button disabled className="w-full py-2.5 font-bold text-slate-400 bg-slate-100 border border-slate-200 rounded-xl cursor-not-allowed">
-                            🚫 Out of Stock
+                        <button disabled className="w-full py-2 text-sm font-medium text-slate-400 bg-slate-100 border border-slate-200 rounded-lg cursor-not-allowed">
+                            Out of Stock
                         </button>
                     ) : (
                         <>
                             {currentQuantity === 0 ? (
-                                <button onClick={() => addToCart(product)} className="w-full py-2.5 font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-xl hover:bg-indigo-100 cursor-pointer">
-                                    🛒 Add to Cart
+                                <button
+                                    onClick={() => addToCart(product)}
+                                    className="w-full py-2 text-sm font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition"
+                                >
+                                    Add to Cart
                                 </button>
                             ) : (
-                                <div className="flex items-center justify-between p-1.5 bg-indigo-50 border border-indigo-200 rounded-xl">
-                                    <button onClick={() => decreaseQuantity(product.id)} className="flex items-center justify-center w-10 h-10 text-xl font-bold text-indigo-600 bg-white rounded-lg shadow-sm hover:bg-indigo-600 hover:text-white cursor-pointer">-</button>
-                                    <span className="font-bold text-indigo-900">{currentQuantity} in cart</span>
-                                    <button onClick={() => addToCart(product)} className="flex items-center justify-center w-10 h-10 text-xl font-bold text-indigo-600 bg-white rounded-lg shadow-sm hover:bg-indigo-600 hover:text-white cursor-pointer">+</button>
+                                <div className="flex items-center justify-between p-1 bg-indigo-50 border border-indigo-200 rounded-lg">
+                                    <button
+                                        onClick={() => decreaseQuantity(product.id)}
+                                        className="w-8 h-8 flex items-center justify-center font-bold text-indigo-700 bg-white rounded border border-indigo-100 shadow-sm hover:bg-indigo-50"
+                                    >
+                                        −
+                                    </button>
+                                    <span className="text-sm font-semibold text-indigo-900">
+                                        {currentQuantity} in cart
+                                    </span>
+                                    <button
+                                        onClick={() => addToCart(product)}
+                                        className="w-8 h-8 flex items-center justify-center font-bold text-indigo-700 bg-white rounded border border-indigo-100 shadow-sm hover:bg-indigo-50"
+                                    >
+                                        +
+                                    </button>
                                 </div>
                             )}
 
-                            <button onClick={handleBuyNow} className="flex items-center justify-center w-full gap-2 py-2.5 font-bold text-white bg-rose-500 rounded-xl shadow-md hover:bg-rose-600 cursor-pointer">
-                                ⚡ Buy Now
+                            <button
+                                onClick={handleBuyNow}
+                                className="w-full py-2 text-sm font-medium text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition"
+                            >
+                                Buy Now
                             </button>
                         </>
                     )}

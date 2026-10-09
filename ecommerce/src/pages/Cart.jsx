@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
+import { ToastContext } from '../context/ToastContext';
 import { SearchContext } from '../context/SearchContext';
 import axiosClient from '../api/axiosClient';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Cart() {
     const { cart, addToCart, decreaseQuantity, clearCart, totalAmount } = useContext(CartContext);
     const { user } = useContext(AuthContext);
+    const { showToast } = useContext(ToastContext);
     const { searchQuery } = useContext(SearchContext);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -16,6 +18,7 @@ export default function Cart() {
         item.product.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Dynamically inject Razorpay SDK script if not already loaded
     const loadRazorpayScript = () => {
         return new Promise((resolve) => {
             const script = document.createElement("script");
@@ -26,61 +29,60 @@ export default function Cart() {
         });
     };
 
-    // NEW DIRECT CHECKOUT FLOW (No OTP)
+    // Pre-checkout authentication and address verification
     const handleCheckout = () => {
         if (cart.length === 0) return;
 
         if (!user) {
+            showToast("Please sign in to proceed with checkout.", "info");
             navigate('/login', { state: { returnToCart: true } });
             return;
         }
 
         if (!user?.address || user?.address.trim() === "") {
-            alert("⚠️ Please set address in your profile to place an order.");
+            showToast("Please provide a shipping address in your profile before ordering.", "warning");
             navigate('/profile');
             return;
         }
 
-        // Agar user logged in hai aur address bhi hai, toh sidha payment start karo
         handlePayment();
     };
 
-    // Razorpay Payment Handler
+    // Process payment through Razorpay gateway
     const handlePayment = async () => {
         setLoading(true);
         try {
             const res = await loadRazorpayScript();
             if (!res) {
-                alert("❌ Please check your internet connection. Razorpay failed to load.");
+                showToast("Payment gateway could not be loaded. Please check your network connection.", "error");
                 setLoading(false);
                 return;
             }
 
-            // 1. Create order on backend
+            // 1. Create order on the backend
             const { data: orderResponse } = await axiosClient.post('/api/payment/create-order', { amount: totalAmount });
+            const razorpayOrderId = orderResponse?.id;
 
-            // 2. Read the clean ID directly!
-            const razorpayOrderId = orderResponse.id;
-            
             if (!razorpayOrderId) {
-                alert("❌ Backend failed to generate a valid Order ID.");
+                showToast("Failed to generate a valid order identifier from the server.", "error");
                 setLoading(false);
                 return;
             }
 
-            // 3. Configure Razorpay
+            // 2. Configure payment options
             const options = {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                amount: Math.round(totalAmount * 100), // ✅ Math.round prevents decimal crashes!
+                amount: Math.round(totalAmount * 100), // Currency unit in paise
                 currency: "INR",
                 name: "SastaHai",
-                description: "Purchase from SastaHai",
+                description: "Order Checkout Payment",
                 order_id: razorpayOrderId,
                 handler: async function (response) {
                     try {
                         const productQuantities = {};
                         cart.forEach(item => { productQuantities[item.product.id] = item.quantity; });
 
+                        // 3. Persist order upon payment completion
                         await axiosClient.post(`/orders/place/${user.id}`, {
                             productQuantities,
                             totalAmount,
@@ -89,70 +91,88 @@ export default function Cart() {
                             razorpay_signature: response.razorpay_signature
                         });
 
-                        alert(`✅ Order successfully placed`);
+                        showToast("Payment successful! Your order has been placed.", "success");
                         clearCart();
-                        navigate('/orders'); 
+                        navigate('/orders');
                     } catch (err) {
-                        console.error("Order API Error:", err.response?.data || err.message);
-                        alert("❌ Payment received, but failed to save order on server.");
+                        console.error("Order fulfillment error:", err.response?.data || err.message);
+                        showToast("Payment completed, but order saving encountered an issue. Please contact support.", "error");
                     }
                 },
                 prefill: {
                     name: user?.name || "",
                     email: user?.email || "",
+                    contact: user?.phoneNumber || ""
                 },
-                theme: { color: "#1e1b4b" }
+                theme: { color: "#4f46e5" }
             };
 
             const paymentObject = new window.Razorpay(options);
             paymentObject.on('payment.failed', function (response) {
-                alert("❌ Payment failed: " + response.error.description);
+                showToast(`Payment declined: ${response.error.description}`, "error");
             });
             paymentObject.open();
 
         } catch (error) {
-            console.error("Payment Error:", error);
-            alert("❌ Error in creating payment");
+            console.error("Payment initiation error:", error);
+            showToast("An error occurred during payment processing.", "error");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="max-w-4xl p-6 mx-auto bg-white border border-slate-100 shadow-sm rounded-2xl md:p-10">
-            <h2 className="pb-4 mb-8 text-3xl font-black border-b border-slate-100 text-slate-800">Your Cart</h2>
+        <div className="max-w-4xl p-6 mx-auto bg-white border border-slate-200 rounded-2xl shadow-sm md:p-8 my-8">
+            <h2 className="pb-4 mb-6 text-2xl font-bold border-b border-slate-100 text-slate-900">
+                Shopping Cart
+            </h2>
 
             {cart.length === 0 ? (
-                <p className="py-10 font-medium text-center text-slate-500">Cart Empty</p>
+                <div className="py-12 text-center">
+                    <p className="text-slate-500 font-medium">Your cart is currently empty.</p>
+                </div>
             ) : (
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-4">
                     {filteredCart.map((item) => (
-                        <div key={item.product.id} className="flex flex-col items-center justify-between p-4 border border-slate-100 gap-4 sm:flex-row rounded-xl bg-slate-50/50">
+                        <div key={item.product.id} className="flex flex-col items-center justify-between p-4 border border-slate-100 gap-4 sm:flex-row rounded-xl bg-slate-50/60">
                             <div className="grow text-center sm:text-left">
-                                <h3 className="text-lg font-bold text-slate-800">{item.product.name}</h3>
-                                <p className="font-bold text-indigo-600">₹{item.product.price.toLocaleString('en-IN')}</p>
+                                <h3 className="text-base font-semibold text-slate-800">{item.product.name}</h3>
+                                <p className="text-sm font-bold text-slate-900 mt-1">₹{item.product.price.toLocaleString('en-IN')}</p>
                             </div>
 
-                            <div className="flex items-center p-2 bg-white border border-slate-200 shadow-sm gap-3 rounded-lg shrink-0">
-                                <button onClick={() => decreaseQuantity(item.product.id)} className="flex items-center justify-center w-8 h-8 font-bold rounded bg-slate-50 text-indigo-600 shadow-sm cursor-pointer">-</button>
-                                <span className="w-6 font-bold text-center text-slate-800">{item.quantity}</span>
-                                <button onClick={() => addToCart(item.product)} className="flex items-center justify-center w-8 h-8 font-bold rounded bg-slate-50 text-indigo-600 shadow-sm cursor-pointer">+</button>
+                            <div className="flex items-center p-1 bg-white border border-slate-200 rounded-lg shrink-0 shadow-sm gap-2">
+                                <button
+                                    onClick={() => decreaseQuantity(item.product.id)}
+                                    className="w-7 h-7 flex items-center justify-center font-bold text-slate-600 rounded hover:bg-slate-100 transition"
+                                >
+                                    −
+                                </button>
+                                <span className="w-8 text-center text-sm font-semibold text-slate-800">{item.quantity}</span>
+                                <button
+                                    onClick={() => addToCart(item.product)}
+                                    className="w-7 h-7 flex items-center justify-center font-bold text-slate-600 rounded hover:bg-slate-100 transition"
+                                >
+                                    +
+                                </button>
                             </div>
 
                             <div className="w-full text-center shrink-0 sm:w-32 sm:text-right">
-                                <p className="text-xl font-black text-slate-900">₹{(item.product.price * item.quantity).toLocaleString('en-IN')}</p>
+                                <p className="text-base font-bold text-slate-900">₹{(item.product.price * item.quantity).toLocaleString('en-IN')}</p>
                             </div>
                         </div>
                     ))}
 
-                    <div className="flex flex-col items-center pt-6 mt-8 border-t border-slate-100 sm:items-end gap-6">
-                        <div className="text-2xl font-black text-slate-800">
-                            Total to Pay: <span className="text-indigo-600">₹{totalAmount.toLocaleString('en-IN')}</span>
+                    <div className="flex flex-col items-center pt-6 mt-6 border-t border-slate-100 sm:items-end gap-4">
+                        <div className="text-lg font-bold text-slate-800">
+                            Total Payable: <span className="text-indigo-600 text-xl font-extrabold ml-1">₹{totalAmount.toLocaleString('en-IN')}</span>
                         </div>
 
-                        {/* 🔥 Button ab sidha handleCheckout call karega */}
-                        <button onClick={handleCheckout} disabled={loading || cart.length === 0} className="flex items-center justify-center w-full px-12 py-4 text-lg font-bold text-white bg-rose-500 sm:w-auto rounded-xl hover:bg-rose-600 disabled:bg-slate-400 cursor-pointer">
-                            {loading ? 'Processing...' : 'Buy Now'}
+                        <button
+                            onClick={handleCheckout}
+                            disabled={loading || cart.length === 0}
+                            className="w-full sm:w-auto px-8 py-3 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 disabled:bg-slate-400 transition shadow-sm"
+                        >
+                            {loading ? 'Processing...' : 'Proceed to Checkout'}
                         </button>
                     </div>
                 </div>
