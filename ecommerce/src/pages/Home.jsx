@@ -16,11 +16,11 @@ export default function Home() {
             setLoading(true);
             try {
                 const response = await axiosClient.get('/products/all');
-                // Ensure state only receives a valid array
+                // Ensure state only receives an array to prevent runtime crash
                 if (Array.isArray(response.data)) {
                     setProducts(response.data);
                 } else {
-                    console.warn("Backend response is not an array:", response.data);
+                    console.warn("Backend returned non-array product response:", response.data);
                     setProducts([]);
                 }
             } catch (error) {
@@ -33,7 +33,7 @@ export default function Home() {
         fetchProducts();
     }, []);
 
-    // Safe filtering that never throws 'filter is not a function'
+    // Safe filtering that prevents 'filter is not a function' error
     const safeProducts = Array.isArray(products) ? products : [];
     const filteredProducts = safeProducts.filter(product => {
         const safeName = product?.name || ""; 
