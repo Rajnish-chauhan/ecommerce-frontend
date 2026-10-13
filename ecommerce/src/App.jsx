@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -11,7 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
     return (
-        <HashRouter>
+        <BrowserRouter>
             <Navbar />
             <main className="min-h-screen px-4 pt-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <Routes>
@@ -24,6 +24,6 @@ export default function App() {
                 </Routes>
             </main>
             <Footer />
-        </HashRouter>
+        </BrowserRouter>
     );
 }
