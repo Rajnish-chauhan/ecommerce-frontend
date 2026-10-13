@@ -1,30 +1,41 @@
 import { useEffect, useState, useContext } from 'react';
-import axiosClient from '../api/axiosClient';
-import ProductCard from '../components/ProductCard';
-import { SearchContext } from '../context/SearchContext';
-import { AuthContext } from '../context/AuthContext';
+import axiosClient from '../api/axiosClient.jsx';
+import ProductCard from '../components/ProductCard.jsx';
+import { SearchContext } from '../context/SearchContext.jsx';
 
 export default function Home() {
     const [products, setProducts] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('All'); 
+    const [loading, setLoading] = useState(true);
     const { searchQuery } = useContext(SearchContext);
     
     const categories = ['All', 'Electronics', 'Cloth', 'Grocery'];
 
     useEffect(() => {
-        // Fetch Default Products
         const fetchProducts = async () => {
+            setLoading(true);
             try {
                 const response = await axiosClient.get('/products/all');
-                setProducts(response.data);
+                // Ensure state only receives a valid array
+                if (Array.isArray(response.data)) {
+                    setProducts(response.data);
+                } else {
+                    console.warn("Backend response is not an array:", response.data);
+                    setProducts([]);
+                }
             } catch (error) {
-                console.error("Error fetching products", error);
+                console.error("Error fetching products:", error);
+                setProducts([]);
+            } finally {
+                setLoading(false);
             }
         };
         fetchProducts();
-    }, []); // Removed login dependency and duplicate OAuth logic
+    }, []);
 
-    const filteredProducts = products.filter(product => {
+    // Safe filtering that never throws 'filter is not a function'
+    const safeProducts = Array.isArray(products) ? products : [];
+    const filteredProducts = safeProducts.filter(product => {
         const safeName = product?.name || ""; 
         const safeQuery = searchQuery || "";
         const safeCategory = product?.category || "General";
@@ -57,19 +68,25 @@ export default function Home() {
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {filteredProducts.length === 0 ? (
-                    <p className="py-10 font-medium text-center text-slate-500 col-span-full">
-                        "{searchQuery}" product not found
-                    </p>
-                ) : (
-                    filteredProducts.map((product) => (
-                        <div key={product.id} className="h-full">
-                            <ProductCard product={product} />
-                        </div>
-                    ))
-                )}
-            </div>
+            {loading ? (
+                <div className="py-16 text-center text-slate-500 font-semibold">
+                    Loading products from store...
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    {filteredProducts.length === 0 ? (
+                        <p className="py-10 font-medium text-center text-slate-500 col-span-full">
+                            {searchQuery ? `"${searchQuery}" product not found` : "No products available currently."}
+                        </p>
+                    ) : (
+                        filteredProducts.map((product) => (
+                            <div key={product.id || product._id} className="h-full">
+                                <ProductCard product={product} />
+                            </div>
+                        ))
+                    )}
+                </div>
+            )}
         </div>
     );
 }
